@@ -42,9 +42,9 @@ def simulate(p1_strategy: StrategyFunction, p2_strategy: StrategyFunction):
             history.append(None)
         
         if p1[0] == 0:
-            return Winner.PLAYER_2
-        elif p2[0] == 0:
             return Winner.PLAYER_1
+        elif p2[0] == 0:
+            return Winner.PLAYER_2
         
         turn += 1
 

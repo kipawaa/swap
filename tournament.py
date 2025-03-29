@@ -2,6 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from tqdm import tqdm
+
 from strategies import Move, strategies
 from simulate import Winner, simulate_many
 
@@ -14,10 +16,11 @@ def tournament(
     results = pd.DataFrame(index=strategy_names,
                            columns=strategy_names,
                            dtype=float)
-    results.fillna(0, inplace=True)
 
+    progress_bar = tqdm(total = len(strategy_names)**2)
     for p1_strategy in strategy_names:
         for p2_strategy in strategy_names:
+            progress_bar.update()
             result = simulate_many(
                 strategies[p1_strategy],
                 strategies[p2_strategy],
@@ -36,19 +39,20 @@ if __name__ == "__main__":
     strategy_names = list(strategies.keys())
     n = 1000
     results = tournament(strategy_names, n)
-    results.to_csv("tournament_results.csv")
+    # results.to_csv("tournament_results.csv")
 
     plt.figure(figsize=(10, 8))
     plt.title("Tournament Results")
-    sns.heatmap(
+    ax = sns.heatmap(
         results,
         annot=True,
         fmt=".2f",
         cmap="coolwarm",
         cbar=True,
+        center=50,
         cbar_kws={'label': 'Win Percentage'},
         xticklabels=results.columns,
         yticklabels=results.index
     )
-    plt.xticks(rotation=45)
+    ax.set(xlabel="player 2 strategy", ylabel="player 1 strategy")
     plt.show()
