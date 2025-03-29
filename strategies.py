@@ -23,6 +23,10 @@ def register_strategy(func: StrategyFunction) -> StrategyFunction:
     strategies[func.__name__] = func
     return func
 
+def format_strategy_name(strategy_name: str) -> str:
+    """Format the strategy name for display."""
+    return strategy_name.replace("_", " ").title()
+
 ##############
 # Strategies #
 ##############
@@ -63,6 +67,18 @@ def low_greedier(ours: int, theirs: int, *args) -> Move:
         return Move.THEIRS
     return Move.MINE
 
+# Developed using policy iteration to be optimal against
+# low_greed strategy. As P1, should win 831818/1361367 (61.1%)
+@register_strategy
+def low_greed_beater(ours: int, theirs: int, *args) -> Move:
+    """Choose ours unless we are 2 or less away from losing 
+    and not 2 or less away from winning and not about to win."""
+    if ours == 4 and theirs >= 3:
+        return Move.THEIRS
+    if ours == 5 and theirs >= 2:
+        return Move.THEIRS
+    return Move.MINE
+
 @register_strategy
 def defensive(ours: int, theirs: int, *args) -> Move:
     """Choose theirs whenever possible."""
@@ -70,8 +86,10 @@ def defensive(ours: int, theirs: int, *args) -> Move:
         return Move.THEIRS
     return Move.MINE
 
+# Developed using policy iteration to be optimal against itself.
+# As P1, should win 10/19 (52.6%)
 @register_strategy
-def balanced(ours: int, theirs: int, *args) -> Move:
+def game_theory_optimal(ours: int, theirs: int, *args) -> Move:
     """Choose ours when closer to winning than they are."""
     needed_to_win = ours
     needed_to_lose = 5 - theirs
