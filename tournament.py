@@ -55,4 +55,5 @@ if __name__ == "__main__":
         yticklabels=results.index
     )
     ax.set(xlabel="player 2 strategy", ylabel="player 1 strategy")
+    ax.figure.tight_layout()
     plt.show()
