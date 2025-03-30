@@ -36,12 +36,15 @@ def tournament(
     results["AverageWinRate"] = avg_score
     sorted_index = avg_score.sort_values(ascending=False).index
     results = results.loc[sorted_index, sorted_index]
+    results["average_winrate"] = avg_score[sorted_index]
+    results["winrate_as_player1"] = score_p1[sorted_index]
+    results["winrate_as_player2"] = score_p2[sorted_index]
 
     return results
 
 if __name__ == "__main__":
     strategy_names = list(strategies.keys())
-    n = 10000
+    n = 100000
     results = tournament(strategy_names, n)
     results.to_csv("results.csv")
 
@@ -58,6 +61,7 @@ if __name__ == "__main__":
         xticklabels=list(map(format_strategy_name, results.columns)),
         yticklabels=list(map(format_strategy_name, results.index))
     )
+    ax.axvline(x=len(strategy_names), color='black', linewidth=3)
     ax.set(xlabel="Player 2 Strategy", ylabel="Player 1 Strategy")
     ax.figure.tight_layout()
     plt.show()
