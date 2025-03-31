@@ -2,22 +2,30 @@
 (warning: density matrices typically refer to a form of state representation in quantum mechanics.
 The use here is similar, so I stole the name)
 
-there are 25 game states
-represent with 6x6 matrix (we can have 0-5 of each)
-col = number of our own tiles
-row = number of our opponents tiles
-for example, the starting position from Alice's perspective is given by
+there are 25 active game states with 10 end states (i.e. where a player has won). 
+The final state is unreachable, and represents when both players have won, but we can ignore this caveat and represent the game with 6x6 matrix.
+The columns represent the number of our own tiles that we control
+The rows represent the number of our opponents tiles that we control
+For example, if we're the starting player then the starting position is given by
 
 ```
 initial_state = np.zeros((6,6))
 initial_state[0, -1] = 1
-print("initial state:")
-print(initial_state)
 ```
 
-we can proceed to the next position by changing the entries.
-we can do even better by using this as a density matrix, representing
-the probabilities of a given state
+$$
+\begin{bmatrix}
+0 & 0 & 0 & 0 & 0 & 1\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0
+\end{bmatrix}
+$$
+
+We can proceed to the next position by changing the entries.
+We can do even better by using this as a "density matrix" (see warning below the title), representing the probabilities of a given state after $n$ turns.
 
 there's a 1/2 probability that Alice fails the coin flip
 ```
@@ -26,33 +34,39 @@ second_state = 1/2 * initial_state
 
 and a 1/2 probability that she succeeds
 ```
-second_state[0, 4] = 1/2
-print("after first move:")
-print(second_state)
+second_state[0, -2] = 1/2
 ```
 
-we can't continue deterministically from here because we don't know if bob
-will choose our tile or his
-this can be computed (to some extent) with symbolic manipulation
-(see theory.pdf)
+$$
+\begin{bmatrix}
+0 & 0 & 0 & 0 & 0.5 & 0.5\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0 & 0
+\end{bmatrix}
+$$
 
-instead, lets do some analysis assuming two truly random agents.
-every non-zero cell of the matrix represents a state that the game could be
-in.
+we can't continue deterministically from here because we don't know if our opponent will choose our tile or theirs.
+This can be computed (to some extent) with symbolic manipulation (see theory.pdf).
+Instead, lets do some analysis assuming two truly random agents.
 
-on our turn:
-  choosing our tile corresponds to moving left
-  choosing our opponents tile corresponds to moving up
+On our turn:
+- choosing our tile corresponds to moving left
+- choosing our opponents tile corresponds to moving up
+
 each of these has a 1/2 probability of being chosen, and a 1/2 probability of
-success.
-on failure, we stay in the same place
+success (i.e. winning the coin flip).
+On failure, we stay in the same place.
 
-on our opponents turn:
-  choosing our tile corresponds to moving right
-  choosing their tile corresponds to moving down
-similar probabilities apply
+On our opponents turn:
+- choosing our tile corresponds to moving right
+- choosing their tile corresponds to moving down
 
-if we reach cell x, 0 then we win, and if we reach 6, y then we lose
+similar probabilities apply to our turn.
+
+If we reach any cell $(r, 0)$ then we win, and if we reach any cell $(6, c)$ then we lose.
 
 so we can implement:
 ```
@@ -94,9 +108,6 @@ for t in range(num_turns):
         state = opp_turn(state)
 ```
 
-np.set_printoptions(formatter={'float': lambda x: f"{x:0.3f}"})
-print(f"after {num_turns} turns:")
-print(state)
+Notice that the winning states are accumulating probabilities here, so that after $n$ iterations the winning states represent the probability of reaching that state in $n$ turns *or less*.
 
-and this can be extended to any set of strategies by us or our opponent by 
-altering the probabilities
+This idea can be extended to any set of strategies by us or our opponent by altering the the probabilities or the way in which we update the cells.
