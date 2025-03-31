@@ -1,13 +1,15 @@
 import numpy as np
+
 initial_state = np.zeros((6,6))
 initial_state[0, -1] = 1
 print("initial state:")
 print(initial_state)
-second_state = 1/2 * initial_state
 
+second_state = 1/2 * initial_state
 second_state[0, 4] = 1/2
 print("after first move:")
 print(second_state)
+
 def our_turn(state):
     # there's a 50% chance of losing the coin flip, i.e. no change
     newstate = state / 2
@@ -31,13 +33,16 @@ def opp_turn(state):
     # there's a 1/4 chance of moving right
     newstate[:-1, 2:] += state[:-1, 1:-1] / 4
     return newstate
+
 num_turns = 10
 state = initial_state
+
 for t in range(num_turns):
     if t % 2 == 0:
         state = our_turn(state)
     else:
         state = opp_turn(state)
+
 np.set_printoptions(formatter={'float': lambda x: f"{x:0.3f}"})
 print(f"after {num_turns} turns:")
 print(state)
