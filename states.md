@@ -108,6 +108,17 @@ for t in range(num_turns):
         state = opp_turn(state)
 ```
 
+$$
+\begin{bmatrix}
+0.001 & 0.008 & 0.035 & 0.078 & 0.106 & 0.082\\
+0.000 & 0.009 & 0.035 & 0.081 & 0.117 & 0.122\\
+0.000 & 0.004 & 0.017 & 0.042 & 0.068 & 0.089\\
+0.000 & 0.001 & 0.005 & 0.014 & 0.025 & 0.038\\
+0.000 & 0.000 & 0.001 & 0.003 & 0.005 & 0.009\\
+0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.001
+\end{bmatrix}
+$$
+
 Notice that the winning states are accumulating probabilities here, so that after $n$ iterations the winning states represent the probability of reaching that state in $n$ turns *or less*.
 
 This idea can be extended to any set of strategies by us or our opponent by altering the the probabilities or the way in which we update the cells.
