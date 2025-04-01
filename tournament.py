@@ -6,7 +6,7 @@ import multiprocessing
 from tqdm import tqdm
 
 from strategies import Move, strategies, format_strategy_name
-from simulate import Winner, simulate_many
+from simulate import Winner, simulate_many, solve_exact
 
 
 def _simulate_matchup(args):
@@ -19,6 +19,14 @@ def _simulate_matchup(args):
     p1_win_percentage = result[Winner.PLAYER_1] / num_games * 100
     return p1_strategy, p2_strategy, p1_win_percentage
 
+def _solve_matchup(args):
+    p1_strategy, p2_strategy, _ = args
+    result = solve_exact(
+        strategies[p1_strategy],
+        strategies[p2_strategy],
+    )
+    p1_win_percentage = float(result) * 100
+    return p1_strategy, p2_strategy, p1_win_percentage
 
 def tournament(
     strategy_names: list[str],
@@ -36,7 +44,7 @@ def tournament(
     num_processes = multiprocessing.cpu_count() - 1
     # num_processes = 1
     with multiprocessing.Pool(processes=num_processes) as pool:
-        for p1, p2, p1_win_percentage in pool.imap_unordered(_simulate_matchup, tasks):
+        for p1, p2, p1_win_percentage in pool.imap_unordered(_solve_matchup, tasks):
             results.at[p1, p2] = p1_win_percentage
             progress_bar.update()
 

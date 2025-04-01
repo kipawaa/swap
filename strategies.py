@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Callable
 
-from random import randint
+from fractions import Fraction
 
 class Move:
     def __init__(self, mine: float, theirs: float):
@@ -10,11 +10,15 @@ class Move:
     
     @staticmethod
     def MINE():
-        return Move(1, 0)
+        return Move(Fraction(1, 1), Fraction(0, 1))
     
     @staticmethod
     def THEIRS():
-        return Move(0, 1)
+        return Move(Fraction(0, 1), Fraction(1, 1))
+    
+    @staticmethod
+    def RANDOM():
+        return Move(Fraction(1, 2), Fraction(1, 2))
 
 StrategyFunction = Callable[[int, int], Move]
 
