@@ -1,5 +1,5 @@
 from enum import Enum
-from random import randint
+from random import randint, random
 
 from strategies import Move, StrategyFunction
 
@@ -13,15 +13,17 @@ def simulate(p1_strategy: StrategyFunction, p2_strategy: StrategyFunction):
     p2 = [5, 0]  # Player 2: [ours, theirs]
 
     turn = 0
-    history = []
 
     while True:
         move_success = randint(0, 1)
 
         if move_success:
             if turn % 2 == 0:
-                move = p1_strategy(*p1, history)
-                if move == Move.MINE:
+                move = p1_strategy(*p1)
+                assert move.mine >= 0 and move.theirs >= 0
+                assert move.mine + move.theirs == 1
+                prob = random()
+                if prob < move.mine:
                     p1[0] -= 1
                     p2[1] += 1
                 else:
@@ -29,17 +31,17 @@ def simulate(p1_strategy: StrategyFunction, p2_strategy: StrategyFunction):
                     p1[1] -= 1
                     p2[0] += 1
             else:
-                move = p2_strategy(*p2, history)
-                if move == Move.MINE:
+                move = p2_strategy(*p2)
+                assert move.mine >= 0 and move.theirs >= 0
+                assert move.mine + move.theirs == 1
+                prob = random()
+                if prob < move.mine:
                     p2[0] -= 1
                     p1[1] += 1
                 else:
                     assert p2[1] > 0
                     p2[1] -= 1
                     p1[0] += 1
-            history.append(move)
-        else:
-            history.append(None)
         
         if p1[0] == 0:
             return Winner.PLAYER_1
